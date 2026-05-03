@@ -4,117 +4,75 @@ PyTorch implementation for **MDI: A Dual-View Deep Learning Framework for Microb
 
 ## Overview
 
-This repository contains the implementation of **MDI**, a multi-view deep learning framework for microbe--drug association prediction.  
-The model integrates:
+MDI is a dual-view framework for microbe--drug association prediction. The model jointly uses:
 
-- **structural information** from observed microbe--drug associations,
-- **homogeneous similarity information** from microbe--microbe and drug--drug graphs,
-- **microbial semantic representations** derived from taxonomy-aware text and large language model embeddings.
+- observed microbe--drug association structure,
+- homogeneous similarity information from microbe--microbe and drug--drug graphs,
+- microbial semantic representations derived from taxonomy-aware text.
 
-MDI learns two complementary views and aligns them through contrastive training, then fuses the resulting representations for downstream association prediction.
+The framework learns a homogeneous similarity view and a heterogeneous interaction view, aligns them during training, and fuses the learned representations for downstream prediction.
 
 ## Framework
 
-> **Main figure placeholder for the paper / GitHub page**
-
 ![Framework of MDI](MD.png)
 
-**Figure 1.** Overall framework of **MDI**. The model integrates a homogeneous similarity view and a heterogeneous interaction view, incorporates microbial semantic embeddings, performs cross-view alignment, and predicts microbe--drug associations through a fused decoder.
+**Figure 1.** Overall framework of **MDI**.
 
 ## Usage
 
-The main training and evaluation entry is implemented in `3.py`.
+The main training and evaluation entry is implemented in `mdi.py`.
 
-To reproduce the main experiments:
+### Installation
 
 ```bash
 git clone https://github.com/yourusername/MDI.git
 cd MDI
-```
-
-Install dependencies in your Python environment:
-
-```bash
 pip install -r requirements.txt
 ```
 
-Run the main experiments:
+### General usage
+
+Run the main script on a dataset directory:
 
 ```bash
-
+python3 mdi.py --dataset_dir ./dataset/MDAD
 ```
 
-For the curated 5-fold result pipeline used in our experiments:
+The same calling pattern applies to the other supported datasets:
 
 ```bash
-python3 run_final_results.py
+python3 mdi.py --dataset_dir ./dataset/aBiofilm
+python3 mdi.py --dataset_dir ./dataset/DrugVirus
 ```
-
-## Additional Experiments
-
-This repository also includes scripts for the major experimental analyses used in the paper:
-
-- **Ablation study**
-  
-  ```bash
-  python3 run_ablation_study.py
-  ```
-
-- **Sensitivity analysis**
-  
-  ```bash
-  python3 run_sensitivity_analysis.py
-  ```
-
-- **Case study with evidence retrieval**
-  
-  ```bash
-  python3 run_case_study_with_evidence.py
-  ```
-
-- **Microbial semantic masking ablation**
-  
-  ```bash
-  python3 run_microbe_semantic_mask_ablation.py
-  ```
-
-- **Representation visualization**
-  
-  ```bash
-  python3 make_publication_node_figure.py
-  ```
 
 ## Project Structure
 
 ```text
 MDI
 │
-├── dataset/                               # Benchmark datasets: MDAD, aBiofilm, DrugVirus
-├── Ref/                                   # Reference methods / auxiliary baseline materials
-│
-├── 3.py                                   # Main training and evaluation script
-├── experiment_utils.py                    # Shared utilities for fold-based experiments
-├── run_final_results.py                   # Reproduce curated 5-fold result tables
-├── run_ablation_study.py                  # Main ablation experiments
-├── run_sensitivity_analysis.py            # Hyperparameter sensitivity analysis
-├── run_case_study_with_evidence.py        # Case-study evaluation with literature evidence
-├── run_microbe_semantic_mask_ablation.py  # Text-masking ablation on microbial semantic fields
-├── make_publication_node_figure.py        # Publication-style visualization scripts
-├── MD.png                                 # Framework illustration of MDI
-├── README.md                              # Project description
-└── requirements.txt                       # Python dependencies
+├── dataset/         # Benchmark datasets
+├── mdi.py             # Main training and evaluation script
+├── MD.png           # Framework figure
+├── README.md        # Project description
+└── requirements.txt # Python dependencies
 ```
 
 ## Microbial Semantics
 
-The microbial semantic branch is constructed from taxonomy-aware text that includes:
+The microbial semantic branch is constructed from taxonomy-aware text. For each microbe, the input text is assembled from the following fields:
 
-- **microbe name**
-- **taxonomic rank**
-- **lineage**
-- **synonyms**
+- microbe name
+- taxonomic rank
+- lineage
+- synonyms
 
-These textual descriptions are encoded into dense embeddings and used as microbial semantic inputs in the dual-view framework.
+A generic text template is used to serialize these fields into a single textual description, for example:
+
+```text
+Microbe Name: <name>. Rank: <rank>. Lineage: <lineage>. Synonyms: <synonyms>.
+```
+
+The resulting text is encoded into a dense vector representation, and pairwise microbial semantic similarity is then computed from these embeddings. In practice, the semantic similarity matrix is used together with the learned microbial semantic embeddings as part of the dual-view framework.
 
 ## Datasets
 
@@ -124,7 +82,7 @@ The repository currently supports three datasets:
 - `aBiofilm`
 - `DrugVirus`
 
-Each dataset contains the observed association matrix, microbe/drug similarity matrices, and the processed microbial semantic files.
+Each dataset contains the observed association matrix, microbe/drug similarity matrices, and processed microbial semantic files.
 
 ## Citation
 
@@ -141,6 +99,5 @@ If you use this repository in your research, please cite our work.
 
 ## Notes
 
-- `MD.png` is the framework figure currently used as the main visual overview.
-- Several scripts generate publication-ready figures, supplementary tables, and case-study reports.
-- If you release this repository publicly, please make sure to remove any local secrets or API keys before publishing.
+- This public release keeps only the main model entry and the minimal project files needed for basic use.
+- Please make sure no private credentials, local paths, or temporary research artifacts are included before publishing.
