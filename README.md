@@ -97,7 +97,3 @@ If you use this repository in your research, please cite our work.
 }
 ```
 
-## Notes
-
-- This public release keeps only the main model entry and the minimal project files needed for basic use.
-- Please make sure no private credentials, local paths, or temporary research artifacts are included before publishing.
